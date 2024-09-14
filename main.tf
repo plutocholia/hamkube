@@ -81,3 +81,21 @@ resource "helm_release" "kube_prometheus_stack" {
     helm_release.ingress-nginx
   ]
 }
+
+## HamHook
+
+resource "helm_release" "hamhook" {
+  name       = "hamhook"
+  namespace  = "hamhook"
+  repository = "https://plutocholia.github.io/hamhook"
+  chart      = "hamhook"
+  version    = "0.1.1"
+  create_namespace  = true
+
+  depends_on = [ helm_release.cert-manager ]
+}
+
+resource "kubectl_manifest" "hamhook_test_pod" {
+  yaml_body = "${file("files/hamhook-tests/manifests.yaml")}"
+  depends_on = [ helm_release.hamhook ]
+}
