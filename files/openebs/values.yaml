@@ -1,0 +1,10 @@
+localprovisioner:
+  enabled: true
+  deviceClass:
+    enabled: false
+ndm:
+  enabled: false
+ndmOperator:
+  enabled: false
+featureGates:
+  enabled: false

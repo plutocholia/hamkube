@@ -1,0 +1,96 @@
+crds:
+  enabled: false
+
+defaultRules:
+  create: false
+
+alertmanager:
+  enabled: false
+
+grafana:
+  enabled: true
+  defaultDashboardsTimezone: Asia/Tehran
+  persistence:
+    enabled: true
+    size: 100Mi
+    storageClassName: openebs-hostpath-x
+    existingClaim: "dummy"
+  useStatefulSet: true
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    path: /
+    pathType: Prefix
+    hosts:
+      - grafana.internal.example
+
+# nodeExporter:
+#   enabled: true
+
+prometheusOperator:
+  enabled: true
+  prometheusConfigReloader:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 50Mi
+      limits:
+        cpu: 200m
+        memory: 50Mi
+
+prometheus:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    path: /
+    pathType: Prefix
+    hosts:
+      - prometheus.internal.example
+
+  thanosService:
+    enabled: true
+
+    portName: grpc
+    port: 10901
+    targetPort: "grpc"
+
+    httpPortName: http
+    httpPort: 10902
+    targetHttpPort: "http"
+
+    nodePort: 30901
+    httpNodePort: 30902
+
+  thanosServiceMonitor:
+    enabled: true
+
+  thanosServiceExternal:
+    enabled: true
+    type: NodePort
+
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    scrapeConfigSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+
+    retention: 1d
+    retentionSize: 500MiB
+
+    externalLabels:
+      cluster: hamravesh
+
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: openebs-hostpath-x
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 600Mi
